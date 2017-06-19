@@ -1,0 +1,69 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"  
+    android:layout_width="fill_parent"  
+    android:layout_height="fill_parent"  
+    android:background="@mipmap/blue"
+    android:orientation="vertical"
+>
+    <LinearLayout
+        android:layout_marginTop="60dp"  
+        android:layout_width="fill_parent"  
+        android:layout_height="50dp"  
+        android:gravity="center_vertical"  
+        android:orientation="horizontal" >  
+  
+        <TextView  
+            android:id="@+id/tv_friend_title"  
+            android:layout_width="0sp"  
+            android:layout_height="50sp"  
+            android:layout_weight="1"  
+            android:gravity="center"  
+            android:text="@string/app_name"  
+            android:textColor="#ffffff"  
+            android:textSize="25sp" />  
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top" >
+
+        <EditText
+            android:id="@+id/et_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15sp"
+            android:layout_marginRight="15sp"
+            android:hint="@string/tip_name"
+            android:textColor="@color/white"
+             />
+
+        <EditText
+            android:id="@+id/et_pass"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/et_name"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="15sp"
+            android:layout_marginRight="15sp"
+            android:inputType="textPassword"
+            android:hint="@string/tip_pass"
+            android:textColor="@color/white"
+             />
+
+        <Button
+            android:id="@+id/btn_login"
+            android:layout_width="80sp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/et_pass"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="36dp"
+            android:onClick="login"
+            android:text="@string/user_login"
+            android:textColor="@color/black"
+            android:textColorHint="@android:color/white"
+            android:textSize="15sp"
+            android:background="@drawable/style_button"  />
+
+    </RelativeLayout>
+
+</LinearLayout>
