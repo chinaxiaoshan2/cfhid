@@ -26,7 +26,7 @@ intent=new Intent(SplashActivity.this,LoginActivity.class);
 startActivity(intent); 
 SplashActivity.this.finish();
 } 
-}, 2000);
+}, 1000);
 }
 
     @Override

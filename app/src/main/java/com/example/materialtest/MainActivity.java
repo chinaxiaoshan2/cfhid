@@ -69,10 +69,10 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
 	// 图片封装为一个数组
 	private int[] icon = { R.drawable.address_book, R.drawable.calendar,
 			R.drawable.camera, R.drawable.clock, R.drawable.weather,
-            R.drawable.camera , R.drawable.grape/* R.drawable.settings,
+            R.drawable.camera /*, R.drawable.grape*//* R.drawable.settings,
             R.drawable.speech_balloon, R.drawable.weather, R.drawable.world,
             R.drawable.youtube*/ };
-	private String[] iconName = { "我的任务", "派发任务", "信息采集", "信息推送", "天气预报","更新版本","上传附件"};
+	private String[] iconName = { "我的任务", "派发任务", "信息采集", "信息推送", "天气预报","更新版本"/*,"上传附件"*/};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

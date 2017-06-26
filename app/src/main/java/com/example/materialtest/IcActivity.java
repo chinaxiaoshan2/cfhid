@@ -2,11 +2,13 @@ package com.example.materialtest;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,13 +19,15 @@ import com.example.materialtest.model.JointQueryInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IcActivity extends AppCompatActivity {
+public class IcActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
 
     private List<JointQueryInfo> icList = new ArrayList<>();
 
     private FruitAdapter adapter;
 
     private SwipeRefreshLayout swipeRefresh;
+
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +46,7 @@ public class IcActivity extends AppCompatActivity {
         Intent intent = getIntent();
         icList= (List<JointQueryInfo>) intent.getSerializableExtra("icList");
         initFruits();
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(layoutManager);
         adapter = new FruitAdapter(icList);
@@ -84,6 +88,29 @@ public class IcActivity extends AppCompatActivity {
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar, menu);
+        MenuItem menuItem = menu.findItem(R.id.ab_search);
+        SearchView searchView=(SearchView) MenuItemCompat.getActionView(menuItem);
+        searchView.setOnQueryTextListener(this);
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        ArrayList<JointQueryInfo> mSearchList = new ArrayList<>();
+        for (int i = 0; i < icList.size(); i++) {
+            int index = icList.get(i).getXiangmumc().indexOf(newText);
+            // 存在匹配的数据
+            if (index != -1) {
+                mSearchList.add(icList.get(i));
+            }
+        }
+        adapter = new FruitAdapter(mSearchList);
+        recyclerView.setAdapter(adapter);
         return true;
     }
 

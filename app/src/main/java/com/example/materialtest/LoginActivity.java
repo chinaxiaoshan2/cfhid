@@ -1,10 +1,13 @@
 package com.example.materialtest;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -27,7 +30,11 @@ public class LoginActivity extends AppCompatActivity {
 	// 声明控件
 	private EditText et_name, et_pass;
 	//final String uri=R.string.serverIp+"pm/login.action";
-
+    private SharedPreferences pref;
+	private SharedPreferences.Editor editor;
+	private CheckBox rememberPass;
+	private String account;
+	private String password;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -36,6 +43,17 @@ public class LoginActivity extends AppCompatActivity {
 		// 获取控件对象
 		et_name = (EditText) findViewById(R.id.et_name); //用户名控件
 		et_pass = (EditText) findViewById(R.id.et_pass);//密码控件
+		pref= PreferenceManager.getDefaultSharedPreferences(this);
+		rememberPass=(CheckBox)findViewById(R.id.remember_pass);
+		boolean isRemember=pref.getBoolean("remember_password",false);
+	    if(isRemember){
+			account=pref.getString("account","");
+			password=pref.getString("password","");
+			et_name.setText(account);
+			et_pass.setText(password);
+			rememberPass.setChecked(true);
+		}
+
 	}
 
 
@@ -98,6 +116,16 @@ public class LoginActivity extends AppCompatActivity {
 								et_pass.setText("");
 								Toast.makeText(LoginActivity.this, "密码错误，请重新输入", Toast.LENGTH_SHORT).show();
 							}else{
+								editor=pref.edit();
+								if(rememberPass.isChecked()){
+									editor.putBoolean("remember_password",true);
+								    editor.putString("account",et_name.getText().toString());
+									editor.putString("password",et_pass.getText().toString());
+								}else{
+									editor.clear();
+								}
+								editor.apply();
+
 								Intent intent= new Intent();
 								intent.putExtra("map", (Serializable)map);
 								intent.setClass(LoginActivity.this, MainActivity.class);

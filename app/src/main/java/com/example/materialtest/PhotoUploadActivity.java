@@ -1,14 +1,15 @@
 package com.example.materialtest;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -18,12 +19,13 @@ import android.widget.Toast;
 import com.example.materialtest.dataprocessing.MyApplication;
 import com.example.materialtest.model.InterchangeNotice;
 import com.example.materialtest.util.FileUtils;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import net.tsz.afinal.FinalHttp;
-import net.tsz.afinal.http.AjaxCallBack;
-import net.tsz.afinal.http.AjaxParams;
 
-import org.json.JSONObject;
+import org.apache.http.Header;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ import java.util.List;
 
 
 public class PhotoUploadActivity extends AppCompatActivity {
+	private SwipeRefreshLayout swipeRefresh;
 	private String actionUrl ;
 	private TextView mText1;
 	private Button mButton;
@@ -38,6 +41,7 @@ public class PhotoUploadActivity extends AppCompatActivity {
 	private FinalHttp finalHttp;
 	private final int FILE_SELECT_CODE=1;
 	private static List<InterchangeNotice> icnLst=new ArrayList<>() ;
+	private ProgressDialog pd;    //进度条对话框
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -54,6 +58,18 @@ public class PhotoUploadActivity extends AppCompatActivity {
           /* 设置mButton的onClick事件处理 */
         mButton = (Button) findViewById(R.id.myButton);
         clearButton=(Button) findViewById(R.id.myButton2);
+
+		swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+		swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
+		swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				refresh();
+			}
+		});
+
+
+
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		ActionBar actionBar = getSupportActionBar();
@@ -82,8 +98,8 @@ public class PhotoUploadActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            Snackbar.make(view, "上传文件吗", Snackbar.LENGTH_SHORT)
-                    .setAction("上传", new View.OnClickListener() {
+            Snackbar.make(view, "确定上传吗", Snackbar.LENGTH_SHORT)
+                    .setAction("确定", new View.OnClickListener() {
 						@Override
                         public void onClick(View v) {
 							upload();
@@ -105,8 +121,59 @@ public class PhotoUploadActivity extends AppCompatActivity {
         }
     });
     }
-	//上传文件
-	public void upload(){
+
+    //上传文件
+    public void upload(){
+        try {
+            if(mText1.getText().toString().length()<1){
+                Toast.makeText(MyApplication.getContext(),"请先添加文件",Toast.LENGTH_LONG).show();
+            }else {
+                AsyncHttpClient client =new AsyncHttpClient();
+                RequestParams params =new RequestParams();
+                String[] sourceStrArray = mText1.getText().toString().split(";");
+                for (int i = 0; i < sourceStrArray.length; i++) {
+                    File file = new File(sourceStrArray[i]);
+                    params.put("file"+String.valueOf(i),file);
+                }
+                client.post(actionUrl, params, new AsyncHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                        showToast("上传成功！");
+						pd.dismiss();
+                    }
+
+                    @Override
+                    public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+                        showToast("上传失败！");
+						pd.dismiss();
+                    }
+
+                    @Override
+                    public void onStart() {
+                        showToast("开始上传！");
+						pd=new  ProgressDialog(PhotoUploadActivity.this);
+						pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+						pd.setMessage("正在上传文件");
+						pd.show();
+                        super.onStart();
+                    }
+
+                    @Override
+                    public void onProgress(int bytesWritten, int totalSize) {
+						pd.setMax(totalSize);
+						pd.setProgress(bytesWritten);
+						super.onProgress(bytesWritten, totalSize);
+                    }
+                });
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+	/*//上传文件
+	public void upload2(){
 		try {
 			if(mText1.getText().toString().length()<1){
 				Toast.makeText(MyApplication.getContext(),"请先添加文件",Toast.LENGTH_LONG).show();
@@ -122,7 +189,7 @@ public class PhotoUploadActivity extends AppCompatActivity {
 				finalHttp.post(url, params, new AjaxCallBack<String>() {
                     @Override
                     public void onLoading(long count, long current) { //每1秒钟自动被回调一次
-                        /*textView.setText(current+"/"+count);*/
+                        *//*textView.setText(current+"/"+count);*//*
                     }
 
                     @Override
@@ -157,7 +224,7 @@ public class PhotoUploadActivity extends AppCompatActivity {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 
 /*	打开文件选择器*/
 
@@ -208,6 +275,25 @@ public class PhotoUploadActivity extends AppCompatActivity {
 				return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void refresh() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						swipeRefresh.setRefreshing(false);
+					}
+				});
+			}
+		}).start();
 	}
 
 }
