@@ -3,7 +3,9 @@ package com.example.materialtest.dataprocessing;
 import com.example.materialtest.model.InterchangeNotice;
 import com.example.materialtest.model.JointQueryInfo;
 import com.example.materialtest.model.MinstorTaskView;
+import com.example.materialtest.model.Pm_department;
 import com.example.materialtest.model.Test;
+import com.example.materialtest.model.Users;
 import com.google.gson.Gson;
 
 import org.apache.http.HttpEntity;
@@ -89,6 +91,22 @@ public class GsonUtil {
         }.getType();
         Gson gson = new Gson();
         List<MinstorTaskView> list= gson.fromJson(json, type);
+        return list;
+    }
+
+    public  static List<Pm_department> getDepListFromJson(String json){
+        java.lang.reflect.Type type = new com.google.gson.reflect.TypeToken<List<Pm_department>>() {
+        }.getType();
+        Gson gson = new Gson();
+        List<Pm_department> list= gson.fromJson(json, type);
+        return list;
+    }
+
+    public  static List<Users> getUserListFromJson(String json){
+        java.lang.reflect.Type type = new com.google.gson.reflect.TypeToken<List<Users>>() {
+        }.getType();
+        Gson gson = new Gson();
+        List<Users> list= gson.fromJson(json, type);
         return list;
     }
 

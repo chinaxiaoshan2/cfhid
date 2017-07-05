@@ -16,7 +16,7 @@ import com.example.materialtest.model.JointQueryInfo;
 public class IcDetailActivity extends AppCompatActivity {
 
 
-    public JointQueryInfo jointQueryInfo;
+    private JointQueryInfo jointQueryInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +40,7 @@ public class IcDetailActivity extends AppCompatActivity {
         TextView fuzery_text=(TextView) findViewById(R.id.fuzery_text);
         TextView shebeizl_text=(TextView) findViewById(R.id.shebeizl_text);
         TextView yujihete_text=(TextView) findViewById(R.id.yujihete_text);
+        TextView genzongqk_text=(TextView) findViewById(R.id.genzongqk_text);
 
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -59,6 +60,7 @@ public class IcDetailActivity extends AppCompatActivity {
         fuzery_text.setText(jointQueryInfo.getFuzery());
         shebeizl_text.setText(jointQueryInfo.getShebeizl());
         yujihete_text.setText(jointQueryInfo.getYujihte());
+        genzongqk_text.setText(jointQueryInfo.getGenzongqk());
        // xinxijib_text.setText(jointQueryInfo.getXinxijib());
 
     }

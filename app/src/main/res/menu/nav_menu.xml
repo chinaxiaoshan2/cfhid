@@ -2,24 +2,24 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_call"
+            android:id="@+id/nav_pm"
             android:icon="@drawable/nav_call"
-            android:title="Call" />
+            android:title="项目管理系统" />
         <item
-            android:id="@+id/nav_friends"
+            android:id="@+id/nav_hr"
             android:icon="@drawable/nav_friends"
-            android:title="Friends" />
+            android:title="人力资源系统" />
         <item
-            android:id="@+id/nav_location"
+            android:id="@+id/nav_fy"
             android:icon="@drawable/nav_location"
-            android:title="Location" />
+            android:title="一重翻译系统" />
         <item
-            android:id="@+id/nav_mail"
+            android:id="@+id/nav_jh"
             android:icon="@drawable/nav_mail"
-            android:title="Mail" />
+            android:title="计划管理系统" />
         <item
-            android:id="@+id/nav_task"
+            android:id="@+id/nav_ht"
             android:icon="@drawable/nav_task"
-            android:title="Tasks" />
+            android:title="合同管理系统" />
     </group>
 </menu>

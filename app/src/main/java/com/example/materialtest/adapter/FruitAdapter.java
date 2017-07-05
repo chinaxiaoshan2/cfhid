@@ -12,9 +12,14 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.materialtest.IcDetailActivity;
+import com.example.materialtest.IcUpdateActivity;
+import com.example.materialtest.KdUpdateIcActivity;
 import com.example.materialtest.R;
+import com.example.materialtest.dataprocessing.MyTask;
 import com.example.materialtest.model.JointQueryInfo;
+import com.example.materialtest.model.Users;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class FruitAdapter extends RecyclerView.Adapter<FruitAdapter.ViewHolder>{
@@ -25,10 +30,15 @@ public class FruitAdapter extends RecyclerView.Adapter<FruitAdapter.ViewHolder>{
 
     private List<JointQueryInfo> mFruitList;
 
+    private String mOperType;
+
+    String mUser_id;
+
     static class ViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
         ImageView fruitImage;
         TextView fruitName;
+
 
         public ViewHolder(View view) {
             super(view);
@@ -38,8 +48,10 @@ public class FruitAdapter extends RecyclerView.Adapter<FruitAdapter.ViewHolder>{
         }
     }
 
-    public FruitAdapter(List<JointQueryInfo> icList) {
+    public FruitAdapter(List<JointQueryInfo> icList,String operType,String user_id) {
         mFruitList = icList;
+        mOperType=operType;
+        mUser_id=user_id;
     }
 
     @Override
@@ -53,10 +65,36 @@ public class FruitAdapter extends RecyclerView.Adapter<FruitAdapter.ViewHolder>{
             @Override
             public void onClick(View v) {
                 int position = holder.getAdapterPosition();
-                JointQueryInfo jointQueryInfo = mFruitList.get(position);
-                Intent intent = new Intent(mContext, IcDetailActivity.class);
+                final JointQueryInfo jointQueryInfo = mFruitList.get(position);
+                new Thread(new Runnable() {
+                    @Override
+                public void run() {
+                Intent intent=new Intent();
+                if(mOperType.equals("3")) {  //领导审阅
+                intent = new Intent(mContext, IcDetailActivity.class);
+               }else if(mOperType.equals("9")){ //部长选择负责人或者更改
+                    intent = new Intent(mContext, KdUpdateIcActivity.class);
+                    List<Users> userLst= MyTask.findUserLst(jointQueryInfo.getKeduan_id());
+                    intent.putExtra("userLst", (Serializable)userLst);
+                }else if(mOperType.equals("1")){
+                    int aa=jointQueryInfo.getTo_kdministor();
+                    int bb=jointQueryInfo.getRecorder_status();
+                    int cc=jointQueryInfo.getMinistor_status();
+                    int dd=jointQueryInfo.getKdministor_status();
+                    String fuzery_id=jointQueryInfo.getFuzery_id();
+
+                       if( !fuzery_id.equals("0")  && (aa==0 || ( (bb==1 || bb==2) && cc==1 && dd==1 ))){ //未上报过
+                           intent = new Intent(mContext, IcUpdateActivity.class);
+                       }else{  //不可以上报
+                           intent = new Intent(mContext, IcDetailActivity.class);
+                       }
+
+                        }
+                intent.putExtra("user_id",mUser_id);
                 intent.putExtra("jointQueryInfo", jointQueryInfo);
                 mContext.startActivity(intent);
+                }
+            }).start();
             }
         });
         return holder;

@@ -28,7 +28,8 @@ public class IcActivity extends AppCompatActivity implements SearchView.OnQueryT
     private SwipeRefreshLayout swipeRefresh;
 
     private RecyclerView recyclerView;
-
+    private String operType;
+    private String user_id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,11 +46,13 @@ public class IcActivity extends AppCompatActivity implements SearchView.OnQueryT
 
         Intent intent = getIntent();
         icList= (List<JointQueryInfo>) intent.getSerializableExtra("icList");
+        operType=intent.getStringExtra("operType");
+        user_id=intent.getStringExtra("user_id");
         initFruits();
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new FruitAdapter(icList);
+        adapter = new FruitAdapter(icList,operType,user_id);
         recyclerView.setAdapter(adapter);
         swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
@@ -109,7 +112,7 @@ public class IcActivity extends AppCompatActivity implements SearchView.OnQueryT
                 mSearchList.add(icList.get(i));
             }
         }
-        adapter = new FruitAdapter(mSearchList);
+        adapter = new FruitAdapter(mSearchList,operType,user_id);
         recyclerView.setAdapter(adapter);
         return true;
     }
@@ -119,6 +122,9 @@ public class IcActivity extends AppCompatActivity implements SearchView.OnQueryT
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                Intent intent= new Intent();
+                intent.setClass(IcActivity.this, MainActivity.class);
+                startActivity(intent);
                 return true;
         }
         return super.onOptionsItemSelected(item);

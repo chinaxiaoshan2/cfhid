@@ -49,27 +49,32 @@
             android:name=".MainActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar" />
+             />
         <activity
             android:name=".IcActivity"
             android:label="@string/getinfo"></activity>
         <activity
             android:name=".IcDetailActivity"
+            android:launchMode="singleTask"
             android:theme="@style/FruitActivityTheme"></activity>
         <activity
             android:name=".MyTaskActivity"
+            android:launchMode="singleTask"
             android:label="@string/myTask"></activity>
         <activity
             android:name=".MyTaskDetailActivity"
+            android:launchMode="singleTask"
             android:theme="@style/FruitActivityTheme"></activity>
         <activity
             android:name=".HeaderTaskActivity"
             android:theme="@style/FruitActivityTheme"></activity>
         <activity
             android:name=".DistributeTaskActivity"
+            android:launchMode="singleTask"
             android:label="派发任务"></activity>
         <activity
             android:name=".DisMainPersonActivity"
+            android:launchMode="singleTask"
             android:label="选择人员和负责人"></activity>
 
         <activity
@@ -90,8 +95,23 @@
             android:launchMode="singleTask" />
 
         <activity
-            android:name=".PhotoUploadActivity"
+        android:name=".PhotoUploadActivity"
+            android:launchMode="singleTask"
+        android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".AddIcActivity"
+            android:launchMode="singleTask"
             android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".KdUpdateIcActivity"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".IcUpdateActivity"
+            android:theme="@style/AppTheme" />
+
         <!-- push富媒体，使用富媒体推送必须声明 -->
         <activity
             android:name="com.baidu.android.pushservice.richmedia.MediaViewActivity"

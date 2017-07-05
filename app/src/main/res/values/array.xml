@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="xinxijib">
+        <item>重要</item>
+        <item>重点</item>
+        <item>一般</item>
+    </string-array>
+    <string-array name="jinzhanjd">
+        <item>信息跟踪</item>
+        <item>投标准备</item>
+        <item>商务谈判</item>
+        <item>等待结果</item>
+        <item>完成招标</item>
+    </string-array>
+    <string-array name="suoshuly">
+        <item>能源装备</item>
+        <item>工业装备</item>
+        <item>环保装备</item>
+        <item>基础材料</item>
+        <item>专项产品</item>
+        <item>其它产品</item>
+    </string-array>
+    <string-array name="xinxijg">
+        <item>正在跟踪</item>
+        <item>中标</item>
+        <item>未中标</item>
+        <item>信息结束</item>
+    </string-array>
+    <string-array name="diqu">
+        <item>东北地区（1）</item>
+        <item>华北地区（2）</item>
+        <item>西北地区（3）</item>
+        <item>西南地区（4）</item>
+        <item>南华地区（5）</item>
+        <item>华中地区（6）</item>
+        <item>东南地区（7）</item>
+        <item>华东地区（8）</item>
+        <item>中国大陆以外地区（9）</item>
+    </string-array>
+    <string-array name="shifouxyxt">
+        <item>否</item>
+        <item>是</item>
+    </string-array>
+</resources>

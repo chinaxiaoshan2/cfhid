@@ -1,6 +1,5 @@
 package com.example.materialtest;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -9,8 +8,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -20,11 +24,13 @@ import android.widget.Toast;
 import com.example.materialtest.dataprocessing.ActivityCollector;
 import com.example.materialtest.dataprocessing.DownLoadManager;
 import com.example.materialtest.dataprocessing.GsonUtil;
+import com.example.materialtest.dataprocessing.MyApplication;
 import com.example.materialtest.dataprocessing.MyTask;
 import com.example.materialtest.dataprocessing.Update;
 import com.example.materialtest.model.InterchangeNotice;
 import com.example.materialtest.model.JointQueryInfo;
 import com.example.materialtest.model.MinstorTaskView;
+import com.example.materialtest.model.Pm_department;
 import com.example.materialtest.model.UpdateInfo;
 
 import java.io.File;
@@ -44,7 +50,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 
-public class MainActivity extends Activity implements AdapterView.OnItemClickListener{
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
 
 	private GridView gview;
 	private List<ConcurrentHashMap<String, Object>> data_list;
@@ -53,6 +59,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
 	private static List<JointQueryInfo> icList=new ArrayList<>() ;
 	private static List<InterchangeNotice> icnLst=new ArrayList<>() ;
 	private static List<MinstorTaskView> mtLst=new ArrayList<>() ;
+	private static List<Pm_department> depLst=new ArrayList<>() ;
    //版本升级用
 	private final String TAG = this.getClass().getName();
 	private final int UPDATA_NONEED = 0;
@@ -62,17 +69,17 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
 	private final int DOWN_ERROR = 4;
 	private UpdateInfo info;
 	private int localVersion;
-
-
+    private DrawerLayout mDrawerLayout;
+	private SwipeRefreshLayout swipeRefresh;
 
 
 	// 图片封装为一个数组
 	private int[] icon = { R.drawable.address_book, R.drawable.calendar,
 			R.drawable.camera, R.drawable.clock, R.drawable.weather,
-            R.drawable.camera /*, R.drawable.grape*//* R.drawable.settings,
+            R.drawable.camera,R.drawable.clock , R.drawable.weather,R.drawable.calendar/* R.drawable.settings,
             R.drawable.speech_balloon, R.drawable.weather, R.drawable.world,
             R.drawable.youtube*/ };
-	private String[] iconName = { "我的任务", "派发任务", "信息采集", "信息推送", "天气预报","更新版本"/*,"上传附件"*/};
+	private String[] iconName = { "我的任务", "派发任务", "领导审阅","信息录入","信息上报", "部长审核","信息推送", "天气预报","更新版本"};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +89,61 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
 		@SuppressWarnings("unchecked")
 		HashMap<String, Object> map= (HashMap<String,Object>) intent.getSerializableExtra("map");
 		user_id=(String) map.get("user_id");
+
+		mDrawerLayout =(DrawerLayout)findViewById(R.id.drawer_layout);
+
+		NavigationView navView=(NavigationView) findViewById(R.id.nav_view);
+		navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
+			@Override
+			public boolean onNavigationItemSelected( MenuItem item) {
+				switch (item.getItemId()) {
+					case R.id.nav_pm:
+						Toast.makeText(MyApplication.getContext(),"目前正在项目管理系统界面",Toast.LENGTH_LONG).show();
+						break;
+					case R.id.nav_hr:
+						Toast.makeText(MyApplication.getContext(), "人力资源系统正在开发中", Toast.LENGTH_LONG).show();
+						break;
+					case R.id.nav_fy:
+						Toast.makeText(MyApplication.getContext(), "一重翻译系统正在开发中", Toast.LENGTH_LONG).show();
+						break;
+					case R.id.nav_jh:
+						Toast.makeText(MyApplication.getContext(), "计划管理系统正在开发中", Toast.LENGTH_LONG).show();
+						break;
+					case R.id.nav_ht:
+						Toast.makeText(MyApplication.getContext(), "合同管理系统正在开发中", Toast.LENGTH_LONG).show();
+						break;
+					default:
+				}
+				mDrawerLayout.closeDrawers();
+				return true;
+			}
+		});
+		swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+		swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
+		swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							Thread.sleep(0);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								swipeRefresh.setRefreshing(false);
+							}
+						});
+					}
+				}).start();
+
+			}
+		});
+
+
 
 
 		gview = (GridView) findViewById(R.id.gview);
@@ -129,13 +191,16 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
 				}).start();
 				break;
 			case 2:
-				// 信息采集
+				// 领导审阅
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
-						icList=managerFindIc();
+						icList.clear();
+						icList=MyTask.findIc("3",user_id);
 						Intent intent= new Intent();
 						intent.putExtra("icList", (Serializable) (icList));
+						intent.putExtra("user_id",user_id);
+						intent.putExtra("operType","3");
 						intent.setClass(MainActivity.this, IcActivity.class);
 						startActivity(intent);
 					}
@@ -143,6 +208,55 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
 				break;
 
 			case 3:
+				// 信息录入
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						depLst=MyTask.findDepLst();
+						Intent intent= new Intent();
+						intent.putExtra("depLst", (Serializable) (depLst));
+						intent.putExtra("user_id",user_id);
+						intent.setClass(MainActivity.this, AddIcActivity.class);
+						startActivity(intent);
+					}
+				}).start();
+				break;
+			case 4:
+				// 信息上报
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						icList.clear();
+						icList=MyTask.findIc("1",user_id);
+						Intent intent= new Intent();
+						intent.putExtra("operType","1");
+						intent.putExtra("icList", (Serializable) (icList));
+						intent.putExtra("user_id",user_id);
+						intent.setClass(MainActivity.this, IcActivity.class);
+						startActivity(intent);
+					}
+				}).start();
+				break;
+
+			case 5:
+				// 部长审核
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						icList.clear();
+						icList=MyTask.findIc("9",user_id);
+
+						Intent intent= new Intent();
+						intent.putExtra("operType","9");
+						intent.putExtra("icList", (Serializable) (icList));
+						intent.putExtra("user_id",user_id);
+						intent.setClass(MainActivity.this, IcActivity.class);
+						startActivity(intent);
+					}
+				}).start();
+				break;
+
+			case 6:
 				// 消息推送
 				new Thread(new Runnable() {
 					@Override
@@ -154,7 +268,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
 				}).start();
 				break;
 
-			case 4:
+			case 7:
 				//天气预报
 				new Thread(new Runnable() {
 					@Override
@@ -166,7 +280,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
 				}).start();
 				break;
 
-			case 5:
+			case 8:
 				//版本更新
 					try {
 							localVersion = Update.getVerCode(this.getBaseContext());
@@ -178,17 +292,6 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
 					}
 				break;
 
-			case 6:
-				//上传文件
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						Intent intent= new Intent();
-						intent.setClass(MainActivity.this, PhotoUploadActivity.class);
-						startActivity(intent);
-					}
-				}).start();
-				break;
 
 			default:
 				break;
@@ -336,28 +439,6 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
 		startActivity(intent);
 	}
 
-	public  List<JointQueryInfo> managerFindIc(){ //3领导审阅PM_IC
-		try {
-			String path = getResources().getString(R.string.serverIp)+"pm/pm_ic/queryIcInfo3.action";
-			URL url = new URL(path);
-			OkHttpClient client = new OkHttpClient();
-			RequestBody requestBody = new FormBody.Builder()
-					.add("operType","3")
-					.build();
-			Request request = new Request.Builder()
-					.url(url).post(requestBody).build();
-			Response response = client.newCall(request).execute();
-			final String responseData = response.body().string();
-			icList = GsonUtil.getIcListFromJson(responseData);
-			for(int i=0;i<icList.size();i++){
-				icList.get(i).setImageId(R.drawable.apple);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return icList;
-	}
-
 
 		public List<InterchangeNotice> listMyTask() { //我的任务
 			try {
@@ -424,6 +505,10 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
 			}
 		}
 	};
+
+
+
+
 
 }
 
